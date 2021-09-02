@@ -111,11 +111,11 @@ server <- function(input, output) {
       print(Stats())
 
 
-      ggplot(data=Stats(),aes(x=1,y=mean,ymax=mean+1.96*se,ymin=ifelse(mean-1.96*se<0,0,mean-1.96*se)))+
+      ggplot(data=Stats(),aes(x=1,y=mean,ymax=ifelse(mean+1.96*se>1000,1000,mean+1.96*se),ymin=ifelse(mean-1.96*se<0,0,mean-1.96*se)))+
         geom_hline(yintercept=mean(locations$Yield),col="red",lty=2)+
         geom_errorbar(size=2,width=0.2)+
         geom_point(col="red",size=4)+
-        ylim(0,2000)+
+        ylim(0,1000)+
         xlim(0.8,1.2)+
         theme_minimal()+
         ggtitle("Estimated yield + margin of error",subtitle=paste("Mean Yield =",round(Stats()$mean),"Margin of error +-",round(1.96*Stats()$se),"kg/ha"))
