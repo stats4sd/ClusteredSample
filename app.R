@@ -14,7 +14,7 @@ locations$dist<-NA
 for(i in 1:50)  {
   locations$dist[i]<-dist(rbind(locations[i,1:2],sourcepoint))
 }
-locations$Yield<-500+sqrt(rnorm(50,1000*(0.5+1/locations$dist),800))
+locations$Yield<-200+(rnorm(50,1000*((0.5+1-locations$dist)),30))/4
 
 
 
@@ -26,7 +26,8 @@ p1<-ggplot(data=locations,aes(x=x,y=y,fill=Yield))+
   scale_y_continuous(breaks=NULL)+
   ggtitle("Villages In My Region")+
   scale_fill_fermenter(palette="RdYlGn",direction=1)+
-  theme(panel.border = element_rect(fill=NA))
+  theme(panel.border = element_rect(fill=NA))+
+  labs(fill="Average Yield")
 
 
 
@@ -81,7 +82,7 @@ server <- function(input, output) {
     nums<-NULL
     for(i in 1:as.numeric(input$bins)){
      tmp<-data.frame(clust=POPinput()[i,1],
-                y=rnorm(mean=POPinput()[i,4],sd=20,n=round(as.numeric(input$size)/as.numeric(input$bins))))
+                y=rnorm(mean=POPinput()[i,4],sd=5,n=round(as.numeric(input$size)/as.numeric(input$bins))))
      nums<-rbind(nums,tmp)
     }
 
@@ -110,11 +111,11 @@ server <- function(input, output) {
       print(Stats())
 
 
-      ggplot(data=Stats(),aes(x=1,y=mean,ymax=mean+1.96*se,ymin=mean-1.96*se))+
+      ggplot(data=Stats(),aes(x=1,y=mean,ymax=mean+1.96*se,ymin=ifelse(mean-1.96*se<0,0,mean-1.96*se)))+
         geom_hline(yintercept=mean(locations$Yield),col="red",lty=2)+
         geom_errorbar(size=2,width=0.2)+
         geom_point(col="red",size=4)+
-        ylim(500,650)+
+        ylim(0,2000)+
         xlim(0.8,1.2)+
         theme_minimal()+
         ggtitle("Estimated yield + margin of error",subtitle=paste("Mean Yield =",round(Stats()$mean),"Margin of error +-",round(1.96*Stats()$se),"kg/ha"))
