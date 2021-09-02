@@ -87,7 +87,7 @@ server <- function(input, output) {
 
     deff<-Hmisc::deff(nums$y,factor(nums$clust))
 
-    sumstats<-data.frame(mean=mean(nums$y),se=sqrt(sd(nums$y)/nrow(nums))*deff[4],n=nrow(nums),
+    sumstats<-data.frame(mean=mean(nums$y),se=(sd(nums$y)/sqrt(nrow(nums)))*deff[4],n=nrow(nums),
                          n0=round(as.numeric(input$size)/as.numeric(input$bins)))
 
     return(sumstats)
